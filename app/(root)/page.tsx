@@ -12,7 +12,7 @@ const Home = async () => {
     .select()
     .from(books)
     .limit(10)
-    .orderBy(desc(books.createdAt))) as Book[];
+    .orderBy(desc(books.createdAt))) as unknown as Book[];;
 
   return (
     <>
