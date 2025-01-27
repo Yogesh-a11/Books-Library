@@ -8,6 +8,8 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import ratelimit from "../ratelimit";
 import { redirect } from "next/navigation";
+import { workflowClient } from "../workflow";
+import config from "../config";
 
 
 
@@ -61,6 +63,15 @@ if (!success) return redirect("/too-fast");
             universityCard,
             password: hashedPassword
         })
+
+        await workflowClient.trigger( {
+            url: `${config.env.prodApiEndpoint}/api/workflows/onboarding`,
+            body: {
+                email,
+                fullName,
+            }
+        })
+
         await signInWithCredentials({email, password})
 
         return { success: true };
