@@ -7,22 +7,20 @@ import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
+import { UploadError } from "imagekitio-next/dist/types/components/IKUpload/props";
+
 const {
   env: {
     imagekit: { publicKey, urlEndpoint },
   },
 } = config;
 
-const authenticator = async () => {
+const authenticator = async (): Promise<{ signature: string; expire: number; token: string }> => {
   try {
     const response = await fetch(`${config.env.apiEndpoint}/api/auth/imagekit`);
 
     if (!response.ok) {
-      const errorText = await response.text();
-
-      throw new Error(
-        `Request failed with status ${response.status}: ${errorText}`,
-      );
+      throw new Error(`Request failed with status ${response.status}`);
     }
 
     const data = await response.json();
@@ -31,16 +29,11 @@ const authenticator = async () => {
 
     return { token, expire, signature };
   } catch (error) {
-    if (error instanceof Error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      })
-        throw new Error(error.message);
-    }
+    console.error("Error:", error);
+    throw error;
   }
 };
+
 
 interface Props {
   type: "image" | "video";
@@ -76,7 +69,7 @@ const FileUpload = ({
     text: variant === "dark" ? "text-light-100" : "text-dark-400",
   };
 
-  const onError = (error: typeof Error) => {
+  const onError = (error: UploadError) => {
     console.log(error);
 
     toast({
@@ -181,14 +174,14 @@ const FileUpload = ({
       {file &&
         (type === "image" ? (
           <IKImage
-            alt={file.filePath}
-            path={file.filePath}
+            alt={file.filePath!}
+            path={file.filePath!}
             width={500}
             height={300}
           />
         ) : type === "video" ? (
           <IKVideo
-            path={file.filePath}
+            path={file.filePath!}
             controls={true}
             className="h-96 w-full rounded-xl"
           />
