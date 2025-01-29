@@ -15,6 +15,13 @@
       "when": 1737959268402,
       "tag": "0001_unknown_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1738132811049,
+      "tag": "0002_abnormal_luminals",
+      "breakpoints": true
     }
   ]
 }
